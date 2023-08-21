@@ -33,6 +33,8 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+envs/
+/mongo-data-4.4
 
 # System Files
 .DS_Store
