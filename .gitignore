@@ -39,3 +39,4 @@ envs/
 # System Files
 .DS_Store
 Thumbs.db
+/code
