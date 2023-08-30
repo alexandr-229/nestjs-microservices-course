@@ -26,6 +26,11 @@ export class UserRepository {
 		return result;
 	}
 
+	async updateUserById(id: string, user: UserEntity) {
+		const result = await this.userModel.findByIdAndUpdate(id, user, { new: true }).exec();
+		return result._id;
+	}
+
 	async deleteUser(email: string) {
 		await this.userModel.deleteOne({ email }).exec();
 	}
