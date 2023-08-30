@@ -16,11 +16,17 @@ export class UserRepository {
 	}
 
 	async findUser(email: string) {
-		const result = this.userModel.findOne({ email }).exec();
+		const result = await this.userModel.findOne({ email }).exec();
+		return result;
+	}
+
+	async findUserById(id: string) {
+		const user = await this.userModel.findById(id).exec();
+		const result = user.toJSON();
 		return result;
 	}
 
 	async deleteUser(email: string) {
-		this.userModel.deleteOne({ email }).exec();
+		await this.userModel.deleteOne({ email }).exec();
 	}
 }
