@@ -2,7 +2,7 @@ import { IsString } from 'class-validator';
 import { PaymentStatus } from '../payment/payment.check';
 
 export namespace AccountBuyCheckPayment {
-	export const topic = 'account.check-payment.query';
+	export const topic = 'account.check-payment.command';
 
 	export class Request {
 		@IsString()
