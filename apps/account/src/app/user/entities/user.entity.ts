@@ -1,4 +1,4 @@
-import { IUser, IUserCourses, UserRole } from '@code/interfaces';
+import { IUser, IUserCourses, PurchaseState, UserRole } from '@code/interfaces';
 import { compare, genSalt, hash } from 'bcryptjs';
 
 export class UserEntity implements IUser {
@@ -16,6 +16,29 @@ export class UserEntity implements IUser {
 		this.role = user.role;
 		this.passwordHash = user.passwordHash;
 		this.courses = user.courses;
+	}
+
+	public setCourseState(courseId: string, status: PurchaseState) {
+		const existCourse = this.courses.find(({ _id }) => _id === courseId);
+		if (!existCourse) {
+			this.courses.push({
+				courseId,
+				purchaseState: status,
+			});
+			return this;
+		}
+
+		if (status === PurchaseState.Canceled) {
+			this.courses = this.courses.filter(({ _id }) => _id !== courseId);
+			return this;
+		}
+		
+		this.courses = this.courses.map(course => ({
+			...course,
+			purchaseState: course.courseId === courseId ? status : course.purchaseState,
+		}));
+
+		return this;
 	}
 
 	public getPublicProfile() {
