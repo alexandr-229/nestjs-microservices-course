@@ -1,4 +1,5 @@
-import { IUser, IUserCourses, PurchaseState, UserRole } from '@code/interfaces';
+import { AccountChnageCourse } from '@code/contracts';
+import { IDomainEvent, IUser, IUserCourses, PurchaseState, UserRole } from '@code/interfaces';
 import { compare, genSalt, hash } from 'bcryptjs';
 
 export class UserEntity implements IUser {
@@ -8,6 +9,7 @@ export class UserEntity implements IUser {
 	passwordHash: string;
 	role: UserRole;
 	courses?: IUserCourses[];
+	events: IDomainEvent[] = [];
 
 	constructor(user: IUser) {
 		this._id = user._id;
@@ -18,25 +20,34 @@ export class UserEntity implements IUser {
 		this.courses = user.courses;
 	}
 
-	public setCourseState(courseId: string, status: PurchaseState) {
+	public setCourseState(courseId: string, state: PurchaseState) {
 		const existCourse = this.courses.find(({ _id }) => _id === courseId);
 		if (!existCourse) {
 			this.courses.push({
 				courseId,
-				purchaseState: status,
+				purchaseState: state,
 			});
 			return this;
 		}
 
-		if (status === PurchaseState.Canceled) {
+		if (state === PurchaseState.Canceled) {
 			this.courses = this.courses.filter(({ _id }) => _id !== courseId);
 			return this;
 		}
 		
 		this.courses = this.courses.map(course => ({
 			...course,
-			purchaseState: course.courseId === courseId ? status : course.purchaseState,
+			purchaseState: course.courseId === courseId ? state : course.purchaseState,
 		}));
+
+		this.events.push({
+			topic: AccountChnageCourse.topic,
+			data: {
+				courseId,
+				userId: this._id,
+				state,
+			},
+		});
 
 		return this;
 	}
