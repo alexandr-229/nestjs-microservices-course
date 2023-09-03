@@ -21,7 +21,7 @@ export class UserEntity implements IUser {
 	}
 
 	public setCourseState(courseId: string, state: PurchaseState) {
-		const existCourse = this.courses.find(({ _id }) => _id === courseId);
+		const existCourse = this.courses.find((course) => course.courseId === courseId);
 		if (!existCourse) {
 			this.courses.push({
 				courseId,
@@ -31,7 +31,7 @@ export class UserEntity implements IUser {
 		}
 
 		if (state === PurchaseState.Canceled) {
-			this.courses = this.courses.filter(({ _id }) => _id !== courseId);
+			this.courses = this.courses.filter((course) => course.courseId !== courseId);
 			return this;
 		}
 		
@@ -50,6 +50,11 @@ export class UserEntity implements IUser {
 		});
 
 		return this;
+	}
+
+	public getCourseState(courseId: string) {
+		const result = this.courses.find((course) => course.courseId === courseId)?.purchaseState || PurchaseState.Started;
+		return result;
 	}
 
 	public getPublicProfile() {
